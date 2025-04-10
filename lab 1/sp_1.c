@@ -5,9 +5,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <time.h>
-
 #include "sp_1.h"
-
 
 int authorization( char* login_buff, int len ) {
     char login[LOGIN_SIZE + 2] = {0};
@@ -16,14 +14,15 @@ int authorization( char* login_buff, int len ) {
     long offset = 0;
     while( 1 ) {
         printf( "To log in, please enter your login:\n" );
-
         code = login_pin_input( login, sizeof( login ) / sizeof( char ) );
-        if ( code == READ_ERR_I ) return READ_ERR_I;
+        if ( code == READ_ERR_I )
+            return READ_ERR_I;
         else if ( code == SPO_TWO_ARGS ) {
             printf( "Login must consist of 1 word.\n" );
             continue;
         }
-        if ( login[0] == EXIT_CHAR && login[1] == '\0' ) return EXIT_CODE_SP;
+        if ( login[0] == EXIT_CHAR && login[1] == '\0' )
+            return EXIT_CODE_SP;
         code = login_check_corr( login );
         if ( code == ZERO_LEN ) {
             printf( "Login must contain at least one character.\n" );
@@ -53,14 +52,15 @@ int authorization( char* login_buff, int len ) {
     }
     while( 1 ) {
         printf( "Enter your PIN.\nIt can only contain decimals and represent a number from 0 to 100000.\n" );
-
         code = login_pin_input( pin, sizeof( pin ) / sizeof( char ) );
-        if ( code == READ_ERR_I ) return READ_ERR_I;
+        if ( code == READ_ERR_I )
+            return READ_ERR_I;
         else if ( code == SPO_TWO_ARGS ) {
             printf( "PIN must consist of 1 word.\n" );
             continue;
         }
-        if ( pin[0] == EXIT_CHAR && pin[1] == '\0' ) return EXIT_CODE_SP;
+        if ( pin[0] == EXIT_CHAR && pin[1] == '\0' )
+            return EXIT_CODE_SP;
         code = pin_check_corr( pin );
         if ( code == ZERO_LEN ) {
             printf( "PIN must contain at least one number.\n" );
@@ -102,14 +102,15 @@ int registration( char* login_buff, int len ) {
     while ( 1 ) {
         printf( "Please enter your desired login.\n" );
         printf( "It should be no longer than 6 characters and consist of numbers and Latin letters.\n" );
-        
         code = login_pin_input( login, sizeof( login ) / sizeof( char ) );
-        if ( code == READ_ERR_I ) return READ_ERR_I;
+        if ( code == READ_ERR_I )
+            return READ_ERR_I;
         else if ( code == SPO_TWO_ARGS ) {
             printf( "Login must consist of 1 word.\n" );
             continue;
         }
-        if ( login[0] == EXIT_CHAR && login[1] == '\0' ) return EXIT_CODE_SP;
+        if ( login[0] == EXIT_CHAR && login[1] == '\0' )
+            return EXIT_CODE_SP;
         code = login_check_corr( login );
         if ( code == ZERO_LEN ) {
             printf( "Login must contain at least one character.\n" );
@@ -137,14 +138,15 @@ int registration( char* login_buff, int len ) {
     }
     while( 1 ) {
         printf( "Enter your PIN.\nIt can only contain decimals and represent a number from 0 to 100000.\n" );
-
         code = login_pin_input( pin, sizeof( pin ) / sizeof( char ) );
-        if ( code == READ_ERR_I ) return READ_ERR_I;
+        if ( code == READ_ERR_I )
+            return READ_ERR_I;
         else if ( code == SPO_TWO_ARGS ) {
             printf( "PIN must consist of 1 word.\n" );
             continue;
         }
-        if ( pin[0] == EXIT_CHAR && pin[1] == '\0' ) return EXIT_CODE_SP;
+        if ( pin[0] == EXIT_CHAR && pin[1] == '\0' ) 
+            return EXIT_CODE_SP;
         code = pin_check_corr( pin );
         if ( code == ZERO_LEN ) {
             printf( "PIN must contain at least one number.\n" );
@@ -168,15 +170,18 @@ int registration( char* login_buff, int len ) {
         }
     }
     code = add_user_to_passw_file( login, pin );
-    if ( code != 0 ) return code;
+    if ( code != 0 ) 
+        return code;
     strncpy( login_buff, login, len );
     return 0;
 }
 
 int login_check_corr( const char* login ) {
     int len = strlen( login );
-    if ( len == 0 ) return ZERO_LEN;
-    if ( len > LOGIN_SIZE ) return TOO_LONG;
+    if ( len == 0 ) 
+        return ZERO_LEN;
+    if ( len > LOGIN_SIZE ) 
+        return TOO_LONG;
     for ( int i = 0; i < len; i++ ) {
         if ( !( isalpha( login[i] ) || isdigit( login[i] ) ) ) return INCORRECT_CHAR;
     }
@@ -187,7 +192,8 @@ long search_login( const char* login, int len ) {
     char buff[RECORD_SIZE] = {0};
     off_t offset = 0;
     int passwords = open( PASSWORD_FILE_NAME, O_RDONLY | O_CREAT, S_IRWXU | S_IRWXG | S_IRWXO );
-    if ( passwords == -1 ) return OPEN_FILE_ERR_R;
+    if ( passwords == -1 ) 
+        return OPEN_FILE_ERR_R;
     while ( 1 ) {
         offset = lseek( passwords, 0, SEEK_CUR );
         if ( offset == -1 ) {
@@ -228,25 +234,29 @@ int login_pin_input( char* buff, int len ) {
             *ptr = '\0';
             return 0;
         }
-        else if ( ferror( stdin ) ) return READ_ERR_I;
-
+        else if ( ferror( stdin ) ) 
+            return READ_ERR_I;
         while ( flag && c == ' ' ) {
             c = getc( stdin );
             if ( feof( stdin ) ) {
                 *ptr = '\0';
                 return 0;
             }
-            else if ( ferror( stdin ) ) return READ_ERR_I;
+            else if ( ferror( stdin ) ) 
+                return READ_ERR_I;
         }
         flag = 0;
         if ( !flag && c == ' ' ) {
             while ( !feof( stdin ) ) {
                 c = getc( stdin );
-                if ( ferror( stdin ) ) return READ_ERR_I;
-                else if ( c != ' ' ) break;
+                if ( ferror( stdin ) ) 
+                    return READ_ERR_I;
+                else if ( c != ' ' ) 
+                    break;
             }
             *ptr = '\0';
-            if ( c == '\n' ) return 0; 
+            if ( c == '\n' ) 
+                return 0; 
             else {
                 flag = SPO_TWO_ARGS;
                 break;
@@ -260,23 +270,31 @@ int login_pin_input( char* buff, int len ) {
     }
     while ( 1 ) {
         c = getc( stdin );
-        if ( feof( stdin ) ) return 0;
-        else if ( ferror( stdin ) ) return READ_ERR_I;
-        if ( c == '\n' ) return flag;
-        else flag = SPO_TWO_ARGS;
+        if ( feof( stdin ) ) 
+            return 0;
+        else if ( ferror( stdin ) ) 
+            return READ_ERR_I;
+        if ( c == '\n' ) 
+            return flag;
+        else 
+            flag = SPO_TWO_ARGS;
     }
 }
 
 long pin_check_corr( const char* pin ) {
     int len = strlen( pin );
     long pin_n = 0;
-    if ( len == 0 ) return ZERO_LEN;
-    if ( pin[0] == '0' && isdigit( pin[1] ) ) return PCC_WRONG_FORMAT;
+    if ( len == 0 ) 
+        return ZERO_LEN;
+    if ( pin[0] == '0' && isdigit( pin[1] ) ) 
+        return PCC_WRONG_FORMAT;
     for ( int i = 0; i < len; ++i ) {
-        if ( !isdigit( pin[i] ) ) return INCORRECT_CHAR;
+        if ( !isdigit( pin[i] ) ) 
+            return INCORRECT_CHAR;
         pin_n = pin_n * 10 + pin[i] - '0';
     }
-    if ( pin_n > MAX_PIN ) return PCC_TOO_BIG_PIN;
+    if ( pin_n > MAX_PIN ) 
+        return PCC_TOO_BIG_PIN;
     return pin_n;
 }
 
@@ -300,7 +318,8 @@ int add_user_to_passw_file( const char* login, const char* pin ) {
 int chechk_pass_match( const char* pin, long offset ) {
     char buff[RECORD_SIZE];
     int passwords = open( PASSWORD_FILE_NAME, O_RDONLY, S_IRWXU | S_IRWXG | S_IRWXO );
-    if ( passwords == -1 ) return OPEN_FILE_ERR_R;
+    if ( passwords == -1 ) 
+        return OPEN_FILE_ERR_R;
     if ( lseek( passwords, offset, SEEK_SET ) == -1 ) {
         close( passwords );
         return LSEEK_ERR;
@@ -311,7 +330,8 @@ int chechk_pass_match( const char* pin, long offset ) {
         return READ_ERR_F;
     }
     for( char* ptr = buff + LOGIN_SIZE + 1; ptr - buff < RECORD_SIZE - 1; ++ptr ) {
-        if ( *ptr == '-' ) break;
+        if ( *ptr == '-' ) 
+            break;
         else if ( pin[ptr - buff - LOGIN_SIZE - 1] != *ptr ) {
             close( passwords );
             return CPM_WRONG_PASS;
@@ -327,13 +347,15 @@ int command_handler( const char* login ) {
         "Time", "Date", "Howmuch", "Logout", "Sanctions"
     };
     long offset = search_login( login, strlen( login ) );
-    if ( offset < 0 ) return offset;
+    if ( offset < 0 ) 
+        return offset;
 
     int limit = 0;
     limit = get_limit( offset );
     int limit_flag = 1;
     if ( limit == LSEEK_ERR || limit == READ_ERR_F
-        || limit == SSCANF_ERR || limit == OPEN_FILE_ERR_R ) return limit;
+        || limit == SSCANF_ERR || limit == OPEN_FILE_ERR_R ) 
+            return limit;
     else if ( limit == 0 ) {
         printf( "Your command limit is 0\n" );
         return LOGOUT_CODE;
@@ -341,13 +363,15 @@ int command_handler( const char* login ) {
     else if ( limit > 0 ) {
         printf( "Your command limit is %d\n", limit );
     }
-    else limit_flag = 0;
-    
+    else 
+        limit_flag = 0;
     while ( !limit_flag || limit > 0 ) {
         printf( "%s>", login );
         int code = command_input( buff, COMMAND_BUFF_SIZE );
-        if ( code == CI_NEW_LINE ) continue;
-        else if ( code == READ_ERR_I ) return code;
+        if ( code == CI_NEW_LINE ) 
+            continue;
+        else if ( code == READ_ERR_I ) 
+            return code;
         else if ( code == CI_BUFF_OVERFLOW ) {
             printf( "\nBuffer overflow. Some values were discarded.\n" );
             printf( "The resulting command was recognized as:\n%s\n", buff );
@@ -418,7 +442,8 @@ int command_input( char* com_buf, int len ) {
             com_buf[i] = '\0';
             return 0;
         }
-        else if ( ferror( stdin ) ) return READ_ERR_I;
+        else if ( ferror( stdin ) ) 
+            return READ_ERR_I;
         if ( flag == 1 && c == ' ' ) {
             while ( c == ' ' ) {
                 c = getc( stdin );
@@ -426,7 +451,8 @@ int command_input( char* com_buf, int len ) {
                     com_buf[i] = '\0';
                     return 0;
                 }
-                else if ( ferror( stdin ) ) return READ_ERR_I;
+                else if ( ferror( stdin ) ) 
+                    return READ_ERR_I;
             }
         }
         else if ( flag == 1 && ( c == '\n' ) ) {
@@ -440,7 +466,8 @@ int command_input( char* com_buf, int len ) {
                     com_buf[i] = '\0';
                     return 0;
                 }
-                else if ( ferror( stdin ) ) return READ_ERR_I;
+                else if ( ferror( stdin ) ) 
+                    return READ_ERR_I;
             }
         }
         else if ( c == ' ' ) {
@@ -456,28 +483,33 @@ int command_input( char* com_buf, int len ) {
     }
     while ( 1 ) {
         c = getc( stdin );
-        if ( feof( stdin ) ) return CI_BUFF_OVERFLOW;
-        else if ( ferror( stdin ) ) return READ_ERR_I;
-        
-        if ( c == '\n' ) return CI_BUFF_OVERFLOW;
+        if ( feof( stdin ) ) 
+            return CI_BUFF_OVERFLOW;
+        else if ( ferror( stdin ) ) 
+            return READ_ERR_I;
+        if ( c == '\n' ) 
+            return CI_BUFF_OVERFLOW;
     }
 }
 
 int command_caller( int command, const char* com_buf ) {
     switch ( command ) {
         case 0:  // Time
-            if ( com_buf[4] != '\0' ) return UNNECESSARY_ARGS;
+            if ( com_buf[4] != '\0' ) 
+                return UNNECESSARY_ARGS;
             return time_com();
             break;
         case 1:  // Date
-            if ( com_buf[4] != '\0' ) return UNNECESSARY_ARGS;
+            if ( com_buf[4] != '\0' )  
+                return UNNECESSARY_ARGS;
             return date_com();
             break;
         case 2:  // Howmuch
             return howmuch_com( com_buf + 7 );
             break;
         case 3:  // Logout
-            if ( com_buf[6] != '\0' ) return UNNECESSARY_ARGS;
+            if ( com_buf[6] != '\0' ) 
+                return UNNECESSARY_ARGS;
             return LOGOUT_CODE;
             break;
         case 4:  // Sanctions
@@ -504,12 +536,15 @@ int date_com() {
 }
 
 int howmuch_com( const char* args ) {
-    if ( *args != ' ' ) return WRONG_ARGS;
+    if ( *args != ' ' ) 
+        return WRONG_ARGS;
     const char* ptr = args + 1;
     while ( *ptr != '\0' ) {
         if ( *ptr == '-' && *( ptr + 1 ) != '\0' ) {
-            if ( *( ptr + 2 ) != '\0' ) return WRONG_ARGS;
-            else break;
+            if ( *( ptr + 2 ) != '\0' ) 
+                return WRONG_ARGS;
+            else 
+                break;
         }
         ++ptr;
     }
@@ -517,22 +552,22 @@ int howmuch_com( const char* args ) {
     int month = 0;
     int day = 0;
     char flag = '\0';
-    if ( sscanf( args + 1, "%d:%d:%d -%c", &day, &month, &year, &flag ) != 4 ) return WRONG_ARGS;
+    if ( sscanf( args + 1, "%d:%d:%d -%c", &day, &month, &year, &flag ) != 4 ) 
+        return WRONG_ARGS;
     if ( ( flag != 'm' && flag != 'h' && flag != 'y' && flag != 's' )
-        || ( !is_valid_date( day, month, year ) ) ) return WRONG_ARGS;
+        || ( !is_valid_date( day, month, year ) ) ) 
+            return WRONG_ARGS;
     struct tm user_input = {0};
     user_input.tm_year = year - 1900;
     user_input.tm_mon = month - 1;
     user_input.tm_mday = day;
     user_input.tm_isdst = -1;
-
     time_t user_time, now;
     user_time = mktime( &user_input );
     if ( user_time == -1 ) {
         return HC_FAILURE_CONVERSION;
     }
     time( &now );
-
     double sec = difftime( now, user_time );
     if ( flag == 's' ) {
         printf( "Time in seconds: %.2f\n", sec );
@@ -550,10 +585,9 @@ int howmuch_com( const char* args ) {
 }
 
 int is_valid_date( int day, int month, int year ) {
-    if ( year < 1 || month < 1 || month > 12 || day < 1 ) return 0;
-    
+    if ( year < 1 || month < 1 || month > 12 || day < 1 ) 
+        return 0;
     int days_in_month[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-    
     if ( ( year % 4 == 0 && year % 100 != 0 ) || ( year % 400 == 0 ) ) {
         days_in_month[1] = 29;
     }
@@ -561,17 +595,18 @@ int is_valid_date( int day, int month, int year ) {
 }
 
 int sanctions_com( const char* args ) {
-    if ( *args != ' ' ) return WRONG_ARGS;
+    if ( *args != ' ' ) 
+        return WRONG_ARGS;
     const char* ptr = args + 1;
     int count = 0;
-
     while ( *ptr != '\0' ) {
         if ( *ptr != ' ' && *( ptr -1 ) == ' ' ) ++count;
-        else if ( count == 2 && !isdigit( *ptr ) ) return WRONG_ARGS;
-        else if ( count == 3 ) return WRONG_ARGS;
+        else if ( count == 2 && !isdigit( *ptr ) ) 
+            return WRONG_ARGS;
+        else if ( count == 3 ) 
+            return WRONG_ARGS;
         ++ptr;
     }
-
     ptr = args + 1;
     printf( "Enter the secret code:\n" );
     int code = 0;
@@ -580,31 +615,38 @@ int sanctions_com( const char* args ) {
     if ( !feof( stdin ) && c != '\n' ) {
         while ( c != '\n' ) {
             c = getc( stdin );
-            if ( !feof( stdin ) ) return SC_INVALID_CODE;
-            else if ( ferror( stdin ) ) return READ_ERR_I;  
+            if ( !feof( stdin ) ) 
+                return SC_INVALID_CODE;
+            else if ( ferror( stdin ) ) 
+                return READ_ERR_I;  
         }   
     }
-    else if ( ferror( stdin ) ) return READ_ERR_I;    
-    
+    else if ( ferror( stdin ) ) 
+        return READ_ERR_I;    
     if ( code != CONF_CODE ) {
         return SC_INVALID_CODE;
     }
     char login[LOGIN_SIZE + 1] = {0};
     while ( *ptr != ' ' ) {
-        if ( ptr - args - 1 > LOGIN_SIZE ) return WRONG_ARGS;
-        if ( isalpha( *ptr ) || isdigit( *ptr ) ) login[ptr - args - 1] = *ptr;
-        else return WRONG_ARGS;
+        if ( ptr - args - 1 > LOGIN_SIZE ) 
+            return WRONG_ARGS;
+        if ( isalpha( *ptr ) || isdigit( *ptr ) ) 
+            login[ptr - args - 1] = *ptr;
+        else 
+            return WRONG_ARGS;
         ++ptr;
     }
     long offset = search_login( login, strlen( login ) );
-    if ( offset < 0 ) return offset;
-
+    if ( offset < 0 ) 
+        return offset;
     int limit = 0;
-    if( sscanf( ptr + 1, "%d", &limit ) != 1 ) return WRONG_ARGS;
-    if ( limit < MIN_LIMIT || limit > MAX_LIMIT ) return WRONG_ARGS;
-
+    if( sscanf( ptr + 1, "%d", &limit ) != 1 ) 
+        return WRONG_ARGS;
+    if ( limit < MIN_LIMIT || limit > MAX_LIMIT ) 
+        return WRONG_ARGS;
     int passwords = open( PASSWORD_FILE_NAME, O_RDWR, S_IRWXU | S_IRWXG | S_IRWXO );
-    if ( passwords == -1 ) return OPEN_FILE_ERR_W;
+    if ( passwords == -1 ) 
+        return OPEN_FILE_ERR_W;
     if ( lseek( passwords, offset + LOGIN_SIZE + 1 + PIN_CHAR_SIZE + 1, SEEK_SET ) == -1 ) {
         close( passwords );
         return LSEEK_ERR;
@@ -627,6 +669,61 @@ int sanctions_com( const char* args ) {
 int get_limit( long offset ) {
     char buff[RECORD_SIZE];
     int passwords = open( PASSWORD_FILE_NAME, O_RDONLY, S_IRWXU | S_IRWXG | S_IRWXO );
-    if ( passwords == -1 ) return OPEN_FILE_ERR_R;
+    if ( passwords == -1 ) 
+        return OPEN_FILE_ERR_R;
     if ( lseek( passwords, offset, SEEK_SET ) == -1 ) {
-        close( passwords 
+        close( passwords );
+        return LSEEK_ERR;
+    }
+    int code = read( passwords, buff, sizeof( buff ) );
+    if ( code == 0 || code == -1 ) {
+        close( passwords );
+        return READ_ERR_F;
+    }
+    char *ptr = buff + LOGIN_SIZE + 1 + PIN_CHAR_SIZE + 1;
+    int limit = 0;
+    if ( sscanf( ptr, "%d\n", &limit ) != 1 ) {
+        close( passwords );
+        return SSCANF_ERR;
+    }
+    close( passwords );
+    return limit;
+}
+
+int err_print( int code ) {
+    switch ( code ) {
+        case SSCANF_ERR:
+            perror( "File parsing error.\n" );
+            printf( "File parsing error.\n" );
+            break;
+        case READ_ERR_I:
+            perror( "Error reading from IO stream.\n" );
+            printf( "Error reading from IO stream.\n" );
+            break;
+        case OPEN_FILE_ERR_R:
+            perror( "Error opening file with passwords.\n" );
+            printf( "Error opening file with passwords.\n" );
+            break;
+        case READ_ERR_F:
+            perror( "Error reading from password file.\n" );
+            printf( "Error reading from password file.\n" );
+            break;
+        case OPEN_FILE_ERR_W:
+            perror( "Error opening file with passwords for writing.\n" );
+            printf( "Error opening file with passwords for writing.\n" );
+            break;
+        case WRITE_ERR_F:
+            perror( "Error writing to password file.\n" );
+            printf( "Error writing to password file.\n" );
+            break;
+        case LSEEK_ERR:
+            perror( "Error changing offset in password file.\n" );
+            printf( "Error changing offset in password file.\n" );
+            break;
+        default:
+            perror( "Unhandled\n" );
+            printf( "Unhandled\n" );
+            break;
+    }
+    return 0;
+}
